@@ -1,0 +1,47 @@
+{
+  "name": "risal-mcp-server",
+  "version": "1.11.0",
+  "description": "Risal MCP server — lets LLM clients (Claude Desktop, Cursor) manage Risal tasks and server monitoring via a scoped personal access token.",
+  "type": "module",
+  "bin": {
+    "risal-mcp-server": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "license": "MIT",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "risal",
+    "tasks",
+    "server-monitoring",
+    "claude",
+    "cursor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/ziyarago/risal-saas",
+    "directory": "mcp-server"
+  },
+  "homepage": "https://app.risal.io",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
