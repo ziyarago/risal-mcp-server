@@ -28,10 +28,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ZiyaraGo-Technologies/risal-mcp-server.git"
+    "url": "git+https://github.com/ziyarago/risal-mcp-server.git"
   },
   "bugs": {
-    "url": "https://github.com/ZiyaraGo-Technologies/risal-mcp-server/issues"
+    "url": "https://github.com/ziyarago/risal-mcp-server/issues"
   },
   "homepage": "https://risal.io",
   "dependencies": {
