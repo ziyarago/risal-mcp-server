@@ -28,10 +28,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/ziyarago/risal-saas",
-    "directory": "mcp-server"
+    "url": "git+https://github.com/ZiyaraGo-Technologies/risal-mcp-server.git"
   },
-  "homepage": "https://app.risal.io",
+  "bugs": {
+    "url": "https://github.com/ZiyaraGo-Technologies/risal-mcp-server/issues"
+  },
+  "homepage": "https://risal.io",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "zod": "^3.23.8"
