@@ -189,7 +189,7 @@ Natural-language prompts your agent can act on once the server is connected:
 ## Develop / run from source
 
 ```bash
-git clone <this-repo> && cd mcp-server
+git clone https://github.com/ziyarago/risal-mcp-server.git && cd risal-mcp-server
 npm install
 npm run build          # tsc → dist/
 RISAL_API_KEY=risal_pat_… npm start
