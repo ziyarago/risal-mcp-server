@@ -104,6 +104,12 @@ server.tool(
   async ({ id, ...patch }) => ok(await api(`/tasks/${id}`, { method: 'PATCH', body: JSON.stringify(clean(patch)) })),
 )
 server.tool(
+  'resync_board',
+  'Re-place a project\'s tasks onto the Kanban column that matches their state. Use this to fix tasks that were marked done/undone via update_task but stayed in the wrong column (shown struck-through but not in the Done column). Only genuinely-misplaced tasks move; custom columns are preserved. Scoped to your own project. Returns { moved }.',
+  { project_id: z.string() },
+  async ({ project_id }) => ok(await api(`/tasks/projects/${project_id}/resync-board`, { method: 'POST' })),
+)
+server.tool(
   'parse_text_to_tasks',
   'AI-parse free text (a plan, notes, a chat) into draft tasks. Preview only — does not create them. Follow up with create_tasks_bulk to persist.',
   { text: z.string() },
