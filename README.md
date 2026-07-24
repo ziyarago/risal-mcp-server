@@ -114,7 +114,7 @@ Derived directly from the source — 42 tools across identity, tasks, and infra.
 |------|-------|---------|
 | `list_tasks` | tasks:read | list tasks, filter by status / project / planned date |
 | `create_task` | tasks:write | create one task (defaults to today's calendar) |
-| `update_task` | tasks:write | patch a task — status, dates, priority, project/sprint |
+| `update_task` | tasks:write | patch a task — status/workflow_state (Kanban column: in_progress/done…), assignee, dates, priority, project/sprint |
 | `resync_board` | tasks:write | re-place a project's tasks on the Kanban column matching their state (fixes done tasks stuck in the wrong column) |
 | `parse_text_to_tasks` | tasks:write | AI-parse free text into draft tasks (preview, no write) |
 | `create_tasks_bulk` | tasks:write | create many tasks at once (e.g. the parsed drafts) |

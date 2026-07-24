@@ -86,7 +86,11 @@ server.tool(
 )
 server.tool(
   'update_task',
-  'Update a task. Mark done/undone with `status` (todo|done) — NOT `state` (state is read-only/computed). Pass null for project_id/sprint_id to move a task to the backlog.',
+  'Update a task. `status` (todo|done) is the done flag. For the Kanban board use `workflow_state` '
+    + '(backlog|todo|in_progress|done|canceled) — e.g. set in_progress when you START work, done when finished — '
+    + 'which also moves the card to the matching board column; or set `step_id` to a specific column id. '
+    + '`assignee_user_id` assigns the task (null = unassign). Never set `state` (read-only/computed). '
+    + 'Pass null for project_id/sprint_id to move a task to the backlog.',
   {
     id: z.string(),
     title: z.string().optional(),
@@ -94,6 +98,11 @@ server.tool(
     type: z.enum(['personal', 'content', 'code', 'docs', 'finance', 'health']).optional(),
     priority: z.enum(['low', 'medium', 'high']).optional(),
     status: z.enum(['todo', 'done']).optional(),
+    workflow_state: z.enum(['backlog', 'todo', 'in_progress', 'done', 'canceled']).optional(),
+    step_id: z.string().nullable().optional(),
+    assignee_user_id: z.string().nullable().optional(),
+    triaged: z.boolean().optional(),
+    git_link: z.string().optional(),
     planned_date: z.string().nullable().optional(),
     deadline: z.string().nullable().optional(),
     est_minutes: z.number().optional(),
