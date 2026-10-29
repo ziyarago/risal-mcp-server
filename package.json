@@ -1,6 +1,6 @@
 {
   "name": "risal-mcp-server",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "description": "Risal MCP server — lets LLM clients (Claude Desktop, Cursor) manage Risal tasks and server monitoring via a scoped personal access token.",
   "type": "module",
   "bin": {

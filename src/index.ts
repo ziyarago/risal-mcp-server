@@ -251,6 +251,30 @@ server.tool(
 )
 server.tool('list_alerts', 'Recent infra alerts, optionally for one server.', { server_id: z.string().optional() }, async (a) => ok(await api(`/infra/alerts${qs(a)}`)))
 
+// ── vulnerability audit (scope: servers / servers:write) ──
+// The agent audits each host for known-CVE package versions, risky SSH/sysctl
+// settings, exposed DBs, pending patches, etc. Each finding carries a status
+// (PASS|WARN|FAIL|INFO), severity, a human remediation, and — when auto-fixable
+// — a fix_kind in the safe allowlist that apply_vuln_fix can dispatch.
+server.tool(
+  'list_vuln_findings',
+  'List a server\'s security/vulnerability findings (FAIL/WARN first). Each has check_id, status (PASS|WARN|FAIL|INFO), severity, title, detail, remediation, optional fix_cmd/fix_kind (present when auto-fixable), cve[]/kev, and fix_state. Use the finding id with apply_vuln_fix.',
+  { server_id: z.string() },
+  async (a) => ok(await api(`/infra/servers/${a.server_id}/vulns`)),
+)
+server.tool(
+  'apply_vuln_fix',
+  'Apply the agent\'s recommended remediation for one finding (pass the finding id from list_vuln_findings). Only findings whose fix_kind is in the safe allowlist (apt_security, apt_upgrade_pkg, install_enable, sysctl, ssh_harden) and whose status is FAIL/WARN and not muted can be fixed; anything else is rejected. Destructive, so it runs through the hub approval gate — if your token is not an owner/admin session it returns status "pending_approval" until a human taps ✅ in Telegram. Async: the agent runs it, then re-audits; poll get_command with the returned command id, and list_vuln_findings to confirm the finding flipped to PASS.',
+  { finding_id: z.string() },
+  async (a) => ok(await api(`/infra/vulns/${a.finding_id}/fix`, { method: 'POST' })),
+)
+server.tool(
+  'mute_vuln_finding',
+  'Mute (or unmute) a finding so it stops alerting and is excluded from auto-fix — for accepted risks or false positives. Pass the finding id from list_vuln_findings.',
+  { finding_id: z.string(), muted: z.boolean().default(true) },
+  async (a) => ok(await api(`/infra/vulns/${a.finding_id}/mute${qs({ muted: a.muted })}`, { method: 'POST' })),
+)
+
 // ── server management / write actions (scope: servers:write) ──
 // All actions are tenant-scoped server-side: a token can only act on servers
 // the user owns. Commands run asynchronously — the agent on the box picks them

@@ -150,6 +150,7 @@ Derived directly from the source — 42 tools across identity, tasks, and infra.
 | `get_server` | servers:read | one server's detail (services, docker, nginx snapshots) |
 | `get_server_metrics` | servers:read | resource time-series (1h / 24h / 7d / 30d / 1y) |
 | `list_alerts` | servers:read | recent infra alerts, optionally for one server |
+| `list_vuln_findings` | servers:read | a server's security/vuln findings (FAIL/WARN first; CVE/KEV, remediation, fix_kind) |
 
 ### Server management (write — async)
 
@@ -168,6 +169,8 @@ Derived directly from the source — 42 tools across identity, tasks, and infra.
 | `list_watched_services` | servers:read | services/containers watched for down-alerts |
 | `add_watched_service` | servers:write | watch a systemd / docker / cron service |
 | `remove_watched_service` | servers:write | stop watching a service |
+| `apply_vuln_fix` | servers:write | apply a finding's vetted remediation (safe fix_kinds only; runs through the approval gate) |
+| `mute_vuln_finding` | servers:write | mute/unmute a finding (accepted risk / false positive) |
 
 > **Server write actions are asynchronous.** They queue a command the on-box
 > Risal agent runs on its next heartbeat (~1 min). The tool returns a command
