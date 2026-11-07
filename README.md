@@ -39,6 +39,8 @@ API tokens**, create a token, and pick the scopes you need:
 | `tasks:write`   | create / update / bulk-create / AI-parse tasks, timers, sprints, projects, log AI usage (implies read) |
 | `servers:read`  | list servers, metrics, alerts, watched services |
 | `servers:write` | restart/start/stop docker · systemd · pm2, fetch logs, run diagnostics, manage watched services (implies read) |
+| `vault:read`    | search / read the owner's private vault (superadmin accounts only) |
+| `vault:write`   | add notes, edit titles/tags in the vault (implies read; superadmin only) |
 
 Copy the token (`risal_pat_…`) — it's shown once. Scope it to the minimum your
 agent needs; you can revoke it anytime from the same screen.
@@ -141,6 +143,19 @@ Derived directly from the source — 42 tools across identity, tasks, and infra.
 |------|-------|---------|
 | `log_ai_usage` | tasks:write | record the agent's own model + token usage → cost report |
 | `get_ai_usage` | tasks:read | token & USD cost report (by model/provider/project, date range) |
+
+### Vault (private drop-box, superadmin)
+
+Everything you send your Vault Telegram bot — text, links, photos, video, voice, files — is
+copied to the Risal server, AI-tagged, and searchable here.
+
+| Tool | Scope | Purpose |
+|------|-------|---------|
+| `vault_search` | vault:read | full-text search + filter by kind / tag / category |
+| `vault_get_item` | vault:read | full item: text, transcript, AI summary; photos are returned inline, other media as a 1-hour `file_url` |
+| `vault_list_tags` | vault:read | tags with counts and items per kind |
+| `vault_add_note` | vault:write | save a text note or link (AI tags it) |
+| `vault_update_item` | vault:write | edit title / summary / category / tags |
 
 ### Server monitoring (read)
 

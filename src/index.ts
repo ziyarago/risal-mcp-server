@@ -402,5 +402,67 @@ server.tool(
   async (a) => ok(await api(`/infra/watched/${a.id}`, { method: 'DELETE' })),
 )
 
+// ── vault: the owner's private drop-box (scope: vault) ──
+// Everything the owner sends their Vault Telegram bot (text, links, photos, video,
+// voice, files) is stored on the Risal server and AI-tagged. Superadmin only.
+server.tool(
+  'vault_search',
+  'Search the owner\'s private vault (notes, links, photos, videos, voice notes, files they dropped into their Telegram bot). `q` matches text, voice transcripts, titles, summaries, file names and tags. Filter by kind (text|link|photo|video|voice|audio|file), tag or category. Newest first. Returns summaries — call vault_get_item for the full content/media.',
+  {
+    q: z.string().optional(),
+    kind: z.enum(['text', 'link', 'photo', 'video', 'voice', 'audio', 'file']).optional(),
+    tag: z.string().optional(),
+    category: z.string().optional(),
+    limit: z.number().int().min(1).max(100).default(20),
+    offset: z.number().int().min(0).optional(),
+  },
+  async (a) => ok(await api(`/vault/items${qs(a)}`)),
+)
+server.tool(
+  'vault_get_item',
+  'Get one vault item in full: text, voice transcript, AI title/summary/tags and metadata. For photos the image itself is returned inline so you can look at it; for video/audio/files a `file_url` (valid ~1 hour, fetch it with GET) is included.',
+  { id: z.string() },
+  async (a) => {
+    const item = (await api(`/vault/items/${a.id}`)) as { kind: string; mime?: string; file_url?: string; size_bytes?: number }
+    const content: Array<{ type: 'text'; text: string } | { type: 'image'; data: string; mimeType: string }> = []
+    if (item.kind === 'photo' && item.file_url && (item.size_bytes ?? 0) <= 8 * 1024 * 1024) {
+      const res = await fetch(`${API_BASE}${item.file_url}`)
+      if (res.ok) {
+        content.push({ type: 'image', data: Buffer.from(await res.arrayBuffer()).toString('base64'), mimeType: item.mime || 'image/jpeg' })
+      }
+    }
+    if (item.file_url) item.file_url = `${API_BASE}${item.file_url}`
+    content.unshift({ type: 'text', text: JSON.stringify(item, null, 2) })
+    return { content }
+  },
+)
+server.tool(
+  'vault_list_tags',
+  'All tags used in the vault with counts, plus the number of items per kind. Use it to discover what the vault contains before searching.',
+  {},
+  async () => ok(await api('/vault/tags')),
+)
+server.tool(
+  'vault_add_note',
+  'Save a text note or link into the owner\'s vault. The AI adds a title, summary, category and tags automatically unless you pass your own tags.',
+  { text: z.string(), title: z.string().optional(), tags: z.array(z.string()).optional() },
+  async (a) => ok(await api('/vault/items', { method: 'POST', body: JSON.stringify({ ...clean(a), source: 'mcp' }) })),
+)
+server.tool(
+  'vault_update_item',
+  'Edit a vault item\'s title, summary, category or tags (tags REPLACE the existing list).',
+  {
+    id: z.string(),
+    title: z.string().optional(),
+    summary: z.string().optional(),
+    category: z.string().optional(),
+    tags: z.array(z.string()).optional(),
+  },
+  async (a) => {
+    const { id, ...rest } = a
+    return ok(await api(`/vault/items/${id}`, { method: 'PATCH', body: JSON.stringify(clean(rest)) }))
+  },
+)
+
 await server.connect(new StdioServerTransport())
 console.error('risal-mcp-server ready →', API_BASE)
