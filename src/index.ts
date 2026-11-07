@@ -407,12 +407,17 @@ server.tool(
 // voice, files) is stored on the Risal server and AI-tagged. Superadmin only.
 server.tool(
   'vault_search',
-  'Search the owner\'s private vault (notes, links, photos, videos, voice notes, files they dropped into their Telegram bot). `q` matches text, voice transcripts, titles, summaries, file names and tags. Filter by kind (text|link|photo|video|voice|audio|file), tag or category. Newest first. Returns summaries — call vault_get_item for the full content/media.',
+  'Search the owner\'s private vault (notes, links, photos, videos, voice notes, files they dropped into their Telegram bot). `q` matches text, voice transcripts, titles, summaries, file names, tags and sender/forwarded-from names. Filter by kind (text|link|photo|video|voice|audio|file), tag, category (use "_none" for uncategorised), author (exact name of the sender or of the original author of a forward) and a date range (YYYY-MM-DD, inclusive; with sort "sent" the range applies to the Telegram send time instead of the save time). Sort by created|sent|name|size|type|category|author, asc or desc (default: newest first). Returns summaries and a total — call vault_get_item for the full content/media. Call vault_list_tags first to see the real tags, categories and authors.',
   {
     q: z.string().optional(),
     kind: z.enum(['text', 'link', 'photo', 'video', 'voice', 'audio', 'file']).optional(),
     tag: z.string().optional(),
     category: z.string().optional(),
+    author: z.string().optional(),
+    date_from: z.string().optional(),
+    date_to: z.string().optional(),
+    sort: z.enum(['created', 'sent', 'name', 'size', 'type', 'category', 'author']).optional(),
+    order: z.enum(['asc', 'desc']).optional(),
     limit: z.number().int().min(1).max(100).default(20),
     offset: z.number().int().min(0).optional(),
   },
@@ -438,7 +443,7 @@ server.tool(
 )
 server.tool(
   'vault_list_tags',
-  'All tags used in the vault with counts, plus the number of items per kind. Use it to discover what the vault contains before searching.',
+  'Overview of the vault with counts: tags, kinds, categories ("" = uncategorised), authors (senders and original authors of forwards) and sources. Use it to discover what the vault contains before searching.',
   {},
   async () => ok(await api('/vault/tags')),
 )
@@ -450,7 +455,7 @@ server.tool(
 )
 server.tool(
   'vault_update_item',
-  'Edit a vault item\'s title, summary, category or tags (tags REPLACE the existing list).',
+  'Edit a vault item\'s title, summary, category or tags (tags REPLACE the existing list). Categories are free-form: reuse one from vault_list_tags or invent a new one.',
   {
     id: z.string(),
     title: z.string().optional(),

@@ -151,9 +151,9 @@ copied to the Risal server, AI-tagged, and searchable here.
 
 | Tool | Scope | Purpose |
 |------|-------|---------|
-| `vault_search` | vault:read | full-text search + filter by kind / tag / category |
+| `vault_search` | vault:read | full-text search; filter by kind / tag / category / author / date range; sort by date, name, size, type… |
 | `vault_get_item` | vault:read | full item: text, transcript, AI summary; photos are returned inline, other media as a 1-hour `file_url` |
-| `vault_list_tags` | vault:read | tags with counts and items per kind |
+| `vault_list_tags` | vault:read | tags, kinds, categories, authors and sources with counts |
 | `vault_add_note` | vault:write | save a text note or link (AI tags it) |
 | `vault_update_item` | vault:write | edit title / summary / category / tags |
 
