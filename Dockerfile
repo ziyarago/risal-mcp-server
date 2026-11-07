@@ -16,5 +16,7 @@ COPY package.json ./
 # the compiled dist/ is copied from the build stage, nothing to build at runtime.
 RUN npm install --omit=dev --ignore-scripts
 COPY --from=build /app/dist ./dist
-# MCP talks over stdio; RISAL_API_KEY is provided at runtime (-e RISAL_API_KEY=…).
+# Default: stdio (RISAL_API_KEY via -e). Hosted/remote mode: run `node dist/http.js`
+# (Streamable HTTP on $PORT, default 8787; token per request in Authorization).
+EXPOSE 8787
 ENTRYPOINT ["node", "dist/index.js"]
